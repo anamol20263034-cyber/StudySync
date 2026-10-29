@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StudySync - Collaborative Learning Space</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                         sketch: {
+                            bg: '#FBFBF9',
+                            sidebar: '#F5F5F0',
+                            card: '#FFFFFF',
+                            border: '#E2E2DC',
+                            borderDark: '#1A1A1A',
+                            hover: '#EFEFEA',
+                            active: '#E5E5DF',
+                            text: '#1A1A1A',
+                            muted: '#666660'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Courier New', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- <script src="script.js"></script> -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FBFBF9;
+            color: #1A1A1A;
+            overflow-x: hidden;
+        }
+        /* Custom Clean Hand-drawn / Sketch Borders & Subtle Shadows */
+        .sketch-border {
+            border: 1px solid #E2E2DC;
+        }
+        .sketch-border-dark {
+            border: 1.5px solid #1A1A1A;
+        }
+        .sketch-card {
+            background-color: #FFFFFF;
+            border: 1px solid #E2E2DC;
+            border-radius: 8px;
+        }
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D5D5CF;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A5A59F;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex bg-[#FBFBF9] text-[#1A1A1A] antialiased selection:bg-slate-200">
+
+    <!-- ================= COLUMN 1: MAIN NAVIGATION SIDEBAR ================= -->
+    <aside class="w-60 bg-[#F5F5F0] border-r border-[#E2E2DC] flex flex-col justify-between shrink-0 select-none">
+        <div>
+            <!-- App Logo Header -->
+            <div class="p-4 border-b border-[#E2E2DC] flex items-center space-x-3">
+                <div class="w-7 h-7 bg-[#1A1A1A] text-white rounded flex items-center justify-center font-bold text-xs">
+                    S
+                </div>
+                <span class="font-bold text-sm tracking-tight text-[#1A1A1A]">StudySync</span>
+            </div>
+
+            <!-- Main Menu Links -->
+            <nav class="p-2 space-y-0.5 text-xs font-medium">
+                <button onclick="navigateTo('notes')" id="nav-notes" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-regular fa-file-lines w-4 text-center"></i>
+                    <span>Notes</span>
+                </button>
+                <button onclick="navigateTo('flashcards')" id="nav-flashcards" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-solid fa-layer-group w-4 text-center"></i>
+                    <span>Flashcards</span>
+                </button>
+                <button onclick="navigateTo('study-rooms')" id="nav-study-rooms" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md bg-[#E5E5DF] text-[#1A1A1A] font-semibold transition-colors">
+                    <i class="fa-solid fa-users w-4 text-center"></i>
+                    <span>Study Rooms</span>
+                </button>
+                <button onclick="navigateTo('whiteboard')" id="nav-whiteboard" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-solid fa-[#1A1A1A] fa-chalkboard w-4 text-center"></i>
+                    <span>Whiteboard</span>
+                </button>
+                <button onclick="navigateTo('ai-tutor')" id="nav-ai-tutor" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-solid fa-robot w-4 text-center"></i>
+                    <span>AI Tutor</span>
+                </button>
+                <button onclick="navigateTo('pomodoro')" id="nav-pomodoro" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-regular fa-clock w-4 text-center"></i>
+                    <span>Pomodoro</span>
+                </button>
+                <button onclick="navigateTo('analytics')" id="nav-analytics" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-solid fa-chart-line w-4 text-center"></i>
+                    <span>Analytics</span>
+                </button>
+                <button onclick="navigateTo('calendar')" id="nav-calendar" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-regular fa-calendar w-4 text-center"></i>
+                    <span>Calendar</span>
+                </button>
+                <button onclick="navigateTo('settings')" id="nav-settings" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-solid fa-gear w-4 text-center"></i>
+                    <span>Settings</span>
+                </button>
+                <button onclick="navigateTo('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors">
+                    <i class="fa-solid fa-border-all w-4 text-center"></i>
+                    <span>Dashboard</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- User Profile Footer -->
+        <div class="p-3 border-t border-[#E2E2DC] space-y-2">
+            <div class="flex items-center space-x-3 p-1.5 rounded-lg">
+                <div class="w-8 h-8 rounded border border-[#1A1A1A] bg-[#EFEFEA] flex items-center justify-center font-bold text-xs text-[#1A1A1A]">
+                    A
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-[#1A1A1A] truncate">Joel</p>
+                    <p class="text-[10px] text-[#666660]">Student</p>
+                </div>
+            </div>
+            <button onclick="showToast('Signed out successfully')" class="w-full flex items-center justify-center space-x-2 py-1.5 px-3 rounded border border-[#E2E2DC] hover:bg-white text-xs text-[#666660] font-medium transition">
+                <i class="fa-solid fa-right-from-bracket text-[10px]"></i>
+                <span>Sign Out</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ================= MAIN CONTENT WRAPPER ================= -->
+    <main class="flex-1 flex overflow-hidden bg-[#FBFBF9]">
+
+        <!-- VIEW PANEL 1: STUDY ROOMS (Default active wireframe matching 3 sub-columns) -->
+        <div id="view-study-rooms" class="view-panel flex-1 flex w-full overflow-hidden">
+            
+            <!-- COLUMN 2: ROOMS LIST & VOICE CHANNELS -->
+            <aside class="w-64 border-r border-[#E2E2DC] flex flex-col justify-between shrink-0 bg-[#FBFBF9] select-none">
+                <div class="p-3 space-y-3">
+                    <!-- Section Header -->
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-xs text-[#1A1A1A]">Study Rooms</span>
+                        <button onclick="createNewRoom()" class="w-5 h-5 border border-[#1A1A1A] rounded flex items-center justify-center text-xs hover:bg-[#1A1A1A] hover:text-white transition" title="Create New Room">
+                            <i class="fa-solid fa-plus text-[10px]"></i>
+                        </button>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-[10px] text-[#666660]"></i>
+                        <input type="text" id="roomSearchInput" oninput="filterRooms()" placeholder="Find a room..." class="w-full text-xs pl-7 pr-2 py-1.5 bg-white border border-[#E2E2DC] rounded focus:outline-none focus:border-[#1A1A1A]">
+                    </div>
+
+                    <!-- My Rooms Section -->
+                    <div class="space-y-1">
+                        <p class="text-[10px] font-bold text-[#666660] uppercase tracking-wider px-1">MY ROOMS</p>
+                        <div class="space-y-0.5" id="myRoomsList">
+                            <button onclick="selectRoom('biology')" id="room-biology" class="room-btn w-full text-left p-2 rounded border border-[#1A1A1A] bg-[#E5E5DF] flex items-center justify-between transition">
+                                <div class="flex items-center space-x-2 min-w-0">
+                                    <div class="w-5 h-5 bg-[#1A1A1A] text-white rounded text-[10px] font-bold flex items-center justify-center shrink-0">B</div>
+                                    <span class="text-xs font-semibold text-[#1A1A1A] truncate">Biology Exam Prep</span>
+                                </div>
+                                <span class="text-[10px] text-[#666660] shrink-0">4 online</span>
+                            </button>
+
+                            <button onclick="selectRoom('history')" id="room-history" class="room-btn w-full text-left p-2 rounded hover:bg-[#EFEFEA] flex items-center justify-between transition">
+                                <div class="flex items-center space-x-2 min-w-0">
+                                    <div class="w-5 h-5 border border-[#1A1A1A] bg-white text-[#1A1A1A] rounded text-[10px] font-bold flex items-center justify-center shrink-0">W</div>
+                                    <span class="text-xs font-medium text-[#1A1A1A] truncate">World History Group</span>
+                                </div>
+                                <span class="text-[10px] text-[#666660] shrink-0">2 online</span>
+                            </button>
+
+                            <button onclick="selectRoom('calculus')" id="room-calculus" class="room-btn w-full text-left p-2 rounded hover:bg-[#EFEFEA] flex items-center justify-between transition">
+                                <div class="flex items-center space-x-2 min-w-0">
+                                    <div class="w-5 h-5 border border-[#1A1A1A] bg-white text-[#1A1A1A] rounded text-[10px] font-bold flex items-center justify-center shrink-0">C</div>
+                                    <span class="text-xs font-medium text-[#1A1A1A] truncate">Calculus Study Hall</span>
+                                </div>
+                                <span class="text-[10px] text-[#666660] shrink-0">5 online</span>
+                            </button>
+
+                            <button onclick="selectRoom('chem')" id="room-chem" class="room-btn w-full text-left p-2 rounded hover:bg-[#EFEFEA] flex items-center justify-between transition">
+                                <div class="flex items-center space-x-2 min-w-0">
+                                    <div class="w-5 h-5 border border-[#1A1A1A] bg-white text-[#1A1A1A] rounded text-[10px] font-bold flex items-center justify-center shrink-0">O</div>
+                                    <span class="text-xs font-medium text-[#1A1A1A] truncate">Organic Chem Lab</span>
+                                </div>
+                                <span class="text-[10px] text-[#666660] shrink-0">3 online</span>
+                            </button>
+
+                            <button onclick="selectRoom('chem')" id="room-chem" class="room-btn w-full text-left p-2 rounded hover:bg-[#EFEFEA] flex items-center justify-between transition">
+                                <div class="flex items-center space-x-2 min-w-0">
+                                    <div class="w-5 h-5 border border-[#1A1A1A] bg-white text-[#1A1A1A] rounded text-[10px] font-bold flex items-center justify-center shrink-0">O</div>
+                                    <span class="text-xs font-medium text-[#1A1A1A] truncate">Inorganic Chem Theory</span>
+                                </div>
+                                <span class="text-[10px] text-[#666660] shrink-0">3 online</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Voice Channels Section -->
+                    <div class="space-y-1 pt-2 border-t border-[#E2E2DC]">
+                        <p class="text-[10px] font-bold text-[#666660] uppercase tracking-wider px-1">VOICE CHANNELS</p>
+                        <div class="space-y-0.5">
+                            <button onclick="toggleVoiceChannel('general')" id="voice-general" class="w-full text-left p-1.5 rounded hover:bg-[#EFEFEA] flex items-center space-x-2 text-xs text-[#1A1A1A]">
+                                <i class="fa-solid fa-volume-high text-[11px] text-[#666660]"></i>
+                                <span>General Focus</span>
+                            </button>
+                            <button onclick="toggleVoiceChannel('help')" id="voice-help" class="w-full text-left p-1.5 rounded hover:bg-[#EFEFEA] flex items-center space-x-2 text-xs text-[#1A1A1A]">
+                                <i class="fa-solid fa-volume-high text-[11px] text-[#666660]"></i>
+                                <span>Help & Q&A</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom User Voice Control Bar -->
+                <div class="p-2.5 border-t border-[#E2E2DC] bg-[#F5F5F0] flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-2 min-w-0">
+                        <div class="relative">
+                            <div class="w-7 h-7 rounded border border-[#1A1A1A] bg-[#1A1A1A] text-white flex items-center justify-center font-bold text-xs">
+                                JD
+                            </div>
+                            <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white"></span>
+                        </div>
+                        <div class="truncate">
+                            <p class="text-xs font-bold text-[#1A1A1A] truncate">John Doe</p>
+                            <p class="text-[9px] text-emerald-600 font-medium" id="voiceStatusText">Online</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button onclick="toggleMute()" id="micBtn" class="p-1.5 hover:bg-[#E2E2DC] rounded text-[#1A1A1A]" title="Mute Microphone">
+                            <i class="fa-solid fa-microphone text-xs"></i>
+                        </button>
+                        <button onclick="toggleDeafen()" id="headphoneBtn" class="p-1.5 hover:bg-[#E2E2DC] rounded text-[#1A1A1A]" title="Deafen Audio">
+                            <i class="fa-solid fa-headphones text-xs"></i>
+                        </button>
+                        <button onclick="navigateTo('settings')" class="p-1.5 hover:bg-[#E2E2DC] rounded text-[#1A1A1A]" title="Audio Settings">
+                            <i class="fa-solid fa-gear text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- COLUMN 3: MAIN CHAT & STUDY CANVAS -->
+            <section class="flex-1 flex flex-col justify-between bg-white border-r border-[#E2E2DC] min-w-0 overflow-hidden">
+                
+                <!-- Chat Room Top Header Bar -->
+                <header class="p-3 border-b border-[#E2E2DC] flex items-center justify-between shrink-0 bg-[#FBFBF9]">
+                    <div class="flex items-center space-x-2">
+                        <h2 class="font-bold text-sm text-[#1A1A1A]" id="currentRoomTitle"># Biology Exam Prep</h2>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded border border-[#E2E2DC] bg-white text-[#666660]">Public</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 text-xs">
+                        <button onclick="shareScreen()" class="px-2.5 py-1 rounded border border-[#1A1A1A] bg-white hover:bg-[#F5F5F0] text-[#1A1A1A] font-medium flex items-center space-x-1.5">
+                            <i class="fa-solid fa-desktop text-[11px]"></i>
+                            <span class="hidden sm:inline">Share Screen</span>
+                        </button>
+                        <button onclick="inviteUser()" class="p-1.5 rounded border border-[#E2E2DC] hover:bg-[#F5F5F0] text-[#1A1A1A]" title="Invite Friends">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </button>
+                        <button class="p-1.5 rounded border border-[#E2E2DC] hover:bg-[#F5F5F0] text-[#1A1A1A]" title="More Room Options">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+                    </div>
+                </header>
+
+                <!-- Scrollable Chat Stream Area -->
+                <div class="flex-1 p-6 overflow-y-auto space-y-6" id="chatStream">
+                    
+                    <!-- Welcome Hero Header matching sketch -->
+                    <div class="text-center py-6 space-y-2 border-b border-[#E2E2DC] pb-6">
+                        <div class="w-12 h-12 bg-[#1A1A1A] text-white mx-auto rounded-lg flex items-center justify-center font-bold text-2xl shadow-sm">
+                            #
+                        </div>
+                        <h3 class="text-lg font-bold text-[#1A1A1A]" id="welcomeRoomHeader">Welcome to #Biology Exam Prep!</h3>
+                        <p class="text-xs text-[#666660]">This is the start of the study session history for this room.</p>
+                    </div>
+
+                    <!-- Live Message Stream -->
+                    <div class="space-y-4" id="messagesList">
+                        <!-- Message 1: Alice Smith -->
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded border border-[#1A1A1A] bg-[#F5F5F0] text-[#1A1A1A] font-bold text-xs flex items-center justify-center shrink-0">
+                                AS
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-bold text-[#1A1A1A]">Alice Smith</span>
+                                    <span class="text-[10px] text-[#666660]">10:30 AM</span>
+                                </div>
+                                <p class="text-xs text-[#1A1A1A] bg-[#FBFBF9] p-2 rounded border border-[#E2E2DC] inline-block">Hey everyone, starting the Pomodoro now!</p>
+                            </div>
+                        </div>
+
+                        <!-- Message 2: Bob Johnson -->
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded border border-[#1A1A1A] bg-[#F5F5F0] text-[#1A1A1A] font-bold text-xs flex items-center justify-center shrink-0">
+                                BJ
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-bold text-[#1A1A1A]">Bob Johnson</span>
+                                    <span class="text-[10px] text-[#666660]">10:31 AM</span>
+                                </div>
+                                <p class="text-xs text-[#1A1A1A] bg-[#FBFBF9] p-2 rounded border border-[#E2E2DC] inline-block">Great, I am working on Chapter 4 notes.</p>
+                            </div>
+                        </div>
+
+                        <!-- Message 3: Charlie Davis -->
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 rounded border border-[#1A1A1A] bg-[#F5F5F0] text-[#1A1A1A] font-bold text-xs flex items-center justify-center shrink-0">
+                                CD
+                            </div>
+                            <div class="space-y-0.5">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-xs font-bold text-[#1A1A1A]">Charlie Davis</span>
+                                    <span class="text-[10px] text-[#666660]">10:32 AM</span>
+                                </div>
+                                <p class="text-xs text-[#1A1A1A] bg-[#FBFBF9] p-2 rounded border border-[#E2E2DC] inline-block">Does anyone understand the mitosis phase transition?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Interactive Chat Input Bar -->
+                <div class="p-3 border-t border-[#E2E2DC] bg-[#FBFBF9]">
+                    <form onsubmit="sendMessage(event)" class="flex items-center space-x-2">
+                        <input type="text" id="chatInput" placeholder="Message #Biology Exam Prep" class="flex-1 text-xs px-3 py-2 bg-white border border-[#1A1A1A] rounded focus:outline-none focus:ring-1 focus:ring-[#1A1A1A]">
+                        <button type="submit" class="p-2 bg-[#1A1A1A] hover:bg-black text-white rounded transition px-3 flex items-center justify-center">
+                            <i class="fa-solid fa-paper-plane text-xs"></i>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- COLUMN 4: RIGHT UTILITIES (GROUP TIMER, SESSION GOALS, PARTICIPANTS) -->
+            <aside class="w-64 p-3 bg-[#FBFBF9] space-y-4 overflow-y-auto shrink-0 select-none">
+                
+                <!-- 1. GROUP TIMER (POMODORO) -->
+                <div class="sketch-card p-3 space-y-3">
+                    <div class="flex items-center space-x-1.5 text-xs font-bold text-[#1A1A1A]">
+                        <i class="fa-regular fa-clock"></i>
+                        <span class="uppercase tracking-wider text-[10px]">GROUP TIMER</span>
+                    </div>
+
+                    <!-- Countdown Display -->
+                    <div class="text-center py-2 bg-[#F5F5F0] rounded border border-[#E2E2DC]">
+                        <span id="timerDisplay" class="font-mono text-3xl font-bold tracking-widest text-[#1A1A1A]">24:59</span>
+                    </div>
+
+                    <!-- Timer Controls -->
+                    <div class="flex items-center space-x-2">
+                        <button onclick="toggleTimer()" id="timerStartBtn" class="flex-1 py-1.5 bg-[#1A1A1A] hover:bg-black text-white text-xs font-bold rounded transition">
+                            Pause
+                        </button>
+                        <button onclick="resetTimer()" class="px-3 py-1.5 border border-[#E2E2DC] hover:bg-[#EFEFEA] text-xs font-semibold rounded text-[#1A1A1A] transition">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 2. SESSION GOALS (CHECKLIST) -->
+                <div class="sketch-card p-3 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-[#1A1A1A] uppercase tracking-wider">SESSION GOALS</span>
+                        <button onclick="addGoalPrompt()" class="text-[#1A1A1A] hover:text-black" title="Add Goal">
+                            <i class="fa-solid fa-plus text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-1.5 text-xs" id="goalsContainer">
+                        <label class="flex items-center space-x-2 p-1 hover:bg-[#F5F5F0] rounded cursor-pointer">
+                            <input type="checkbox" checked onchange="toggleGoal(this)" class="accent-[#1A1A1A] rounded">
+                            <span class="text-[#1A1A1A] line-through opacity-60">Complete Chapter 4 quiz</span>
+                        </label>
+                        <label class="flex items-center space-x-2 p-1 hover:bg-[#F5F5F0] rounded cursor-pointer">
+                            <input type="checkbox" onchange="toggleGoal(this)" class="accent-[#1A1A1A] rounded">
+                            <span class="text-[#1A1A1A]">Review Flashcards</span>
+                        </label>
+                        <label class="flex items-center space-x-2 p-1 hover:bg-[#F5F5F0] rounded cursor-pointer">
+                            <input type="checkbox" onchange="toggleGoal(this)" class="accent-[#1A1A1A] rounded">
+                            <span class="text-[#1A1A1A]">Summarize lab report</span>
+                        </label>
+                            <label class="flex items-center space-x-2 p-1 hover:bg-[#F5F5F0] rounded cursor-pointer">
+                            <input type="checkbox" onchange="toggleGoal(this)" class="accent-[#1A1A1A] rounded">
+                            <span class="text-[#1A1A1A]">Revise Notes</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 3. PARTICIPANTS LIST -->
+                <div class="sketch-card p-3 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-[#1A1A1A] uppercase tracking-wider">PARTICIPANTS - <span id="participantCount">4</span></span>
+                    </div>
+
+                    <div class="space-y-2 text-xs" id="participantsList">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded border border-[#1A1A1A] bg-[#1A1A1A] text-white font-bold text-[10px] flex items-center justify-center">
+                                    JD
+                                </div>
+                                <span class="font-semibold text-[#1A1A1A]">Alex Doe</span>
+                            </div>
+                            <span class="text-[9px] px-1 bg-[#E5E5DF] rounded border border-[#E2E2DC] text-[#666660]">Host</span>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded border border-[#1A1A1A] bg-[#F5F5F0] font-bold text-[10px] flex items-center justify-center">
+                                    AS
+                                </div>
+                                <span class="text-[#1A1A1A]">Alice Smith</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded border border-[#1A1A1A] bg-[#F5F5F0] font-bold text-[10px] flex items-center justify-center">
+                                    BJ
+                                </div>
+                                <span class="text-[#1A1A1A]">Bob Johnson</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-6 h-6 rounded border border-[#1A1A1A] bg-[#F5F5F0] font-bold text-[10px] flex items-center justify-center">
+                                    CD
+                                </div>
+                                <span class="text-[#1A1A1A]">Charlie Davis</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Made By Badge matching wireframe bottom right -->
+                <div class="text-right pt-2">
+                    <span class="inline-flex items-center space-x-1 text-[10px] bg-[#1A1A1A] text-white px-2 py-0.5 rounded">
+                        <span>Made by</span>
+                        <span class="font-bold">MeDo</span>
+                    </span>
+                </div>
+
+            </aside>
+        </div>
+
+        <!-- ================= DYNAMIC SIDEBAR PANELS ================= -->
+        
+        <!-- VIEW 2: NOTES -->
+        <div id="view-notes" class="view-panel hidden flex-1 p-6 space-y-4 overflow-y-auto">
+            <h2 class="text-xl font-bold text-[#1A1A1A] border-b border-[#E2E2DC] pb-3">Collaborative Notes & Documents</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="sketch-card p-4 space-y-2">
+                    <h3 class="font-bold text-sm">Chapter 4 - Biology Mitosis Notes</h3>
+                    <p class="text-xs text-[#666660]">Last edited 10 mins ago by Sarah</p>
+                    <textarea class="w-full h-32 p-2 border border-[#E2E2DC] rounded text-xs font-mono focus:outline-none" placeholder="Type collaborative note content...">Prophase -> Metaphase -> Anaphase -> Telophase. Chromosomes align along the metaphase plate.</textarea>
+                </div>
+                <div class="sketch-card p-4 space-y-2">
+                    <h3 class="font-bold text-sm">Organic Chemistry Mechanisms</h3>
+                    <p class="text-xs text-[#666660]">Last edited yesterday by John</p>
+                    <textarea class="w-full h-32 p-2 border border-[#E2E2DC] rounded text-xs font-mono focus:outline-none" placeholder="Type collaborative note content...">SN1 vs SN2 reaction pathways summary table and nucleophile strengths.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 3: FLASHCARDS -->
+        <div id="view-flashcards" class="view-panel hidden flex-1 p-6 space-y-4 overflow-y-auto">
+            <h2 class="text-xl font-bold text-[#1A1A1A] border-b border-[#E2E2DC] pb-3">Interactive Flashcards Deck</h2>
+            <div class="max-w-md mx-auto sketch-card p-8 text-center space-y-4 my-8">
+                <span class="text-xs uppercase font-bold text-[#666660]">Biology • Card 3 of 20</span>
+                <p class="text-lg font-bold text-[#1A1A1A]">What is the primary function of Mitochondria in eukaryotic cells?</p>
+                <button onclick="alert('Answer: Cellular respiration and ATP energy production.')" class="px-4 py-2 bg-[#1A1A1A] text-white text-xs font-bold rounded">Reveal Answer</button>
+            </div>
+        </div>
+
+        <!-- VIEW 4: WHITEBOARD -->
+        <div id="view-whiteboard" class="view-panel hidden flex-1 p-4 flex flex-col space-y-3">
+            <div class="flex items-center justify-between border-b border-[#E2E2DC] pb-2">
+                <h2 class="text-lg font-bold text-[#1A1A1A]">Shared Canvas Whiteboard</h2>
+                <div class="flex space-x-2">
+                    <button onclick="clearWhiteboard()" class="px-3 py-1 text-xs border border-[#1A1A1A] rounded">Clear</button>
+                    <button onclick="showToast('Whiteboard state saved')" class="px-3 py-1 text-xs bg-[#1A1A1A] text-white rounded">Save Image</button>
+                </div>
+            </div>
+            <div class="flex-1 sketch-card bg-white relative">
+                <canvas id="whiteboardCanvas" class="w-full h-full cursor-crosshair"></canvas>
+            </div>
+        </div>
+
+        <!-- VIEW 5: AI TUTOR -->
+        <div id="view-ai-tutor" class="view-panel hidden flex-1 p-6 space-y-4 overflow-y-auto">
+            <h2 class="text-xl font-bold text-[#1A1A1A] border-b border-[#E2E2DC] pb-3">StudySync AI Personal Tutor</h2>
+            <div class="sketch-card p-4 space-y-3 max-w-2xl mx-auto">
+                <div class="bg-[#F5F5F0] p-3 rounded border border-[#E2E2DC] text-xs">
+                    <p class="font-bold text-[#1A1A1A]">AI Tutor:</p>
+                    <p class="text-[#666660]">Hello Joel ! What concept would you like me to explain today? (e.g., Calculus Integration, Mitosis, or Organic Syntheses)</p>
+                </div>
+                <div class="flex space-x-2">
+                    <input type="text" placeholder="Ask AI Tutor a question..." class="flex-1 text-xs p-2 border border-[#1A1A1A] rounded">
+                    <button onclick="showToast('AI Tutor processing response...')" class="px-4 py-2 bg-[#1A1A1A] text-white text-xs font-bold rounded">Ask</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 6: POMODORO FULL -->
+        <div id="view-pomodoro" class="view-panel hidden flex-1 p-6 space-y-4 text-center">
+            <h2 class="text-xl font-bold text-[#1A1A1A] border-b border-[#E2E2DC] pb-3">Focus Timer & Analytics</h2>
+            <div class="text-5xl font-mono font-bold py-12">24:59</div>
+        </div>
+
+        <!-- VIEW 7: ANALYTICS -->
+        <div id="view-analytics" class="view-panel hidden flex-1 p-6 space-y-4">
+            <h2 class="text-xl font-bold text-[#1A1A1A] border-b border-[#E2E2DC] pb-3">Study Productivity Analytics</h2>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="sketch-card p-4 text-center">
+                    <p class="text-xs text-[#666660]">Weekly Focus Hours</p>
+                    <p class="text-2xl font-bold mt-1">18.5 hrs</p>
+                </div>
+                <div class="sketch-card p-4 text-center">
+                    <p class="text-xs text-[#666660]">Goals Completed</p>
+                    <p class="text-2xl font-bold mt-1">24 / 30</p>
+                </div>
+                <div class="sketch-card p-4 text-center">
+                    <p class="text-xs text-[#666660]">Group Ranking</p>
+                    <p class="text-2xl font-bold mt-1">Top 5%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 8: CALENDAR -->
+        <div id="view-calendar" class="view-panel hidden flex-1 p-6 space-y-4">
+            <h2 class="text-xl font-bold text-[#1A1A1A] border-b border-[#E2E2DC] pb-3">Study Calendar & Deadlines</h2>
+            <div class="sketch-card p-4 text-xs">
+                <p class="font-bold">October 2026 Upcoming Exams:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1 text-[#666660]">
+                    <li>Oct 28: Biology Midterm Exam</li>
+                    <li>Oct 31: Calculus Assignment 3 Due</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- VIEW 9: SETTINGS -->
+        <div id="view-settings" class="view-panel hidden flex-1 p-6 space-y-4">
+            <h2 class="text-xl font-bold text-[#1A1A1A] border-b border-[#E2E2DC] pb-3">Room & Account Settings</h2>
+            <div class="sketch-card p-4 space-y-3 text-xs max-w-md">
+                <label class="block">
+                    <span class="font-bold">Display Name</span>
+                    <input type="text" value="anwetz" class="w-full mt-1 p-2 border border-[#E2E2DC] rounded">
+                </label>
+                <label class="block">
+                    <span class="font-bold">Audio Output Device</span>
+                    <select class="w-full mt-1 p-2 border border-[#E2E2DC] rounded">
+                        <option>Default Speakers</option>
+                        <option>Headphones</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-[#1A1A1A] text-white text-xs px-4 py-2 rounded shadow-lg hidden transition-all z-50"></div>
+
+    <!-- ================= JAVASCRIPT APP LOGIC ================= -->
+    <script>
+        // State Store
+        const state = {
+            currentRoom: 'biology',
+            timerSeconds: 1499, // 24:59
+            timerRunning: true,
+            timerInterval: null,
+            isMuted: false,
+            isDeafened: false
+        };
+
+        // Initialize Canvas & Timer on Load
+        window.onload = function() {
+            startTimer();
+            initWhiteboard();
+        };
+
+        // Navigation between Sidebar Tabs
+        function navigateTo(viewId) {
+            // Hide all view panels
+            document.querySelectorAll('.view-panel').forEach(panel => panel.classList.add('hidden'));
+            
+            // Show selected view panel
+            const targetView = document.getElementById(`view-${viewId}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            // Reset navigation styles
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.className = 'nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md hover:bg-[#EFEFEA] text-[#666660] transition-colors';
+            });
+
+            // Highlight active nav button
+            const activeNav = document.getElementById(`nav-${viewId}`);
+            if (activeNav) {
+                activeNav.className = 'nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-md bg-[#E5E5DF] text-[#1A1A1A] font-semibold transition-colors';
+            }
+        }
+
+        // Room Selection Switcher
+        function selectRoom(roomId) {
+            state.currentRoom = roomId;
+
+            // Reset Room Button styles
+            document.querySelectorAll('.room-btn').forEach(btn => {
+                btn.className = 'room-btn w-full text-left p-2 rounded hover:bg-[#EFEFEA] flex items-center justify-between transition';
+            });
+
+            const activeBtn = document.getElementById(`room-${roomId}`);
+            if (activeBtn) {
+                activeBtn.className = 'room-btn w-full text-left p-2 rounded border border-[#1A1A1A] bg-[#E5E5DF] flex items-center justify-between transition';
+            }
+
+            // Update Headings based on room
+            const roomTitles = {
+                biology: 'Biology Exam Prep',
+                history: 'World History Group',
+                calculus: 'Calculus Study Hall',
+                chem: 'Organic Chem Lab'
+            };
+
+            const name = roomTitles[roomId] || 'Study Room';
+            document.getElementById('currentRoomTitle').innerText = `# ${name}`;
+            document.getElementById('welcomeRoomHeader').innerText = `Welcome to #${name}!`;
+            document.getElementById('chatInput').placeholder = `Message #${name}`;
+
+            showToast(`Switched to #${name}`);
+        }
+
+        // Interactive Live Chat
+        function sendMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const messagesList = document.getElementById('messagesList');
+            const msgObj = document.createElement('div');
+            msgObj.className = 'flex items-start space-x-3';
+            msgObj.innerHTML = `
+                <div class="w-8 h-8 rounded border border-[#1A1A1A] bg-[#1A1A1A] text-white font-bold text-xs flex items-center justify-center shrink-0">
+                    JD
+                </div>
+                <div class="space-y-0.5">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-bold text-[#1A1A1A]">John Doe</span>
+                        <span class="text-[10px] text-[#666660]">Just now</span>
+                    </div>
+                    <p class="text-xs text-[#1A1A1A] bg-[#FBFBF9] p-2 rounded border border-[#E2E2DC] inline-block">${escapeHtml(text)}</p>
+                </div>
+            `;
+
+            messagesList.appendChild(msgObj);
+            input.value = '';
+
+            // Auto Scroll to bottom
+            const chatStream = document.getElementById('chatStream');
+            chatStream.scrollTop = chatStream.scrollHeight;
+        }
+
+        // Timer Logic
+        function startTimer() {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                if (state.timerRunning && state.timerSeconds > 0) {
+                    state.timerSeconds--;
+                    updateTimerUI();
+                }
+            }, 1000);
+        }
+
+        function updateTimerUI() {
+            const mins = Math.floor(state.timerSeconds / 60).toString().padStart(2, '0');
+            const secs = (state.timerSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${mins}:${secs}`;
+        }
+
+        function toggleTimer() {
+            state.timerRunning = !state.timerRunning;
+            const btn = document.getElementById('timerStartBtn');
+            btn.innerText = state.timerRunning ? 'Pause' : 'Start';
+        }
+
+        function resetTimer() {
+            state.timerSeconds = 1499;
+            updateTimerUI();
+            showToast('Timer reset to 24:59');
+        }
+
+        // Goals Management
+        function toggleGoal(checkbox) {
+            const textSpan = checkbox.nextElementSibling;
+            if (checkbox.checked) {
+                textSpan.classList.add('line-through', 'opacity-60');
+            } else {
+                textSpan.classList.remove('line-through', 'opacity-60');
+            }
+        }
+
+        function addGoalPrompt() {
+            const goalText = prompt("Enter new session goal:");
+            if (!goalText) return;
+
+            const container = document.getElementById('goalsContainer');
+            const label = document.createElement('label');
+            label.className = 'flex items-center space-x-2 p-1 hover:bg-[#F5F5F0] rounded cursor-pointer';
+            label.innerHTML = `
+                <input type="checkbox" onchange="toggleGoal(this)" class="accent-[#1A1A1A] rounded">
+                <span class="text-[#1A1A1A]">${escapeHtml(goalText)}</span>
+            `;
+            container.appendChild(label);
+            showToast('Goal added to list');
+        }
+
+        // Room Controls
+        function createNewRoom() {
+            const roomName = prompt("Enter new Study Room name:");
+            if (!roomName) return;
+            showToast(`Room #${roomName} created!`);
+        }
+
+        function filterRooms() {
+            const query = document.getElementById('roomSearchInput').value.toLowerCase();
+            document.querySelectorAll('.room-btn').forEach(btn => {
+                const text = btn.innerText.toLowerCase();
+                btn.style.display = text.includes(query) ? 'flex' : 'none';
+            });
+        }
+
+        function toggleMute() {
+            state.isMuted = !state.isMuted;
+            const micBtn = document.getElementById('micBtn');
+            micBtn.innerHTML = state.isMuted ? '<i class="fa-solid fa-microphone-slash text-xs text-red-600"></i>' : '<i class="fa-solid fa-microphone text-xs"></i>';
+            document.getElementById('voiceStatusText').innerText = state.isMuted ? 'Muted' : 'Online';
+            showToast(state.isMuted ? 'Microphone Muted' : 'Microphone Unmuted');
+        }
+
+        function toggleDeafen() {
+            state.isDeafened = !state.isDeafened;
+            const btn = document.getElementById('headphoneBtn');
+            btn.innerHTML = state.isDeafened ? '<i class="fa-solid fa-volume-xmark text-xs text-red-600"></i>' : '<i class="fa-solid fa-headphones text-xs"></i>';
+            showToast(state.isDeafened ? 'Audio Deafened' : 'Audio Active');
+        }
+
+        function shareScreen() {
+            showToast("Screen sharing session started");
+        }
+
+        function inviteUser() {
+            showToast("Invite link copied to clipboard");
+        }
+
+        function toggleVoiceChannel(name) {
+            showToast(`Joined voice channel: ${name === 'general' ? 'General Focus' : 'Help & Q&A'}`);
+        }
+
+        // Simple Drawing Whiteboard Initialization
+        function initWhiteboard() {
+            const canvas = document.getElementById('whiteboardCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let drawing = false;
+
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight || 400;
+
+            canvas.addEventListener('mousedown', () => drawing = true);
+            canvas.addEventListener('mouseup', () => { drawing = false; ctx.beginPath(); });
+            canvas.addEventListener('mousemove', draw);
+
+            function draw(e) {
+                if (!drawing) return;
+                const rect = canvas.getBoundingClientRect();
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#1A1A1A';
+
+                ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+            }
+        }
+
+        function clearWhiteboard() {
+            const canvas = document.getElementById('whiteboardCanvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                showToast('Whiteboard cleared');
+            }
+        }
+
+        // Helper Utilities
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 2500);
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
