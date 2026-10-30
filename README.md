@@ -1,5 +1,7 @@
 # 📚 StudySync - Collaborative Learning Space
 
+Web Link :http://127.0.0.1:3000/StudySync.html?vscode-livepreview=true
+
 StudySync is a modern, real-time collaborative learning web application designed to bring students and peers together. It features a unified frontend and backend setup equipped with interactive tools to enhance collaborative study sessions.
 
 ---
@@ -33,3 +35,5 @@ studysync/
     ├── server.js       # Express server entry point
     ├── package.json    # Backend dependencies & metadata
     └── package-lock.json
+
+
